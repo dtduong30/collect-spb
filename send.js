@@ -13,7 +13,7 @@ async function sendCollect() {
       { content: "$collect" },
       {
         headers: {
-          "Authorization": `Bot ${TOKEN}`,
+          "Authorization": `${TOKEN}`,
           "Content-Type": "application/json",
         },
       }
