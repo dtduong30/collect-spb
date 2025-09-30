@@ -1,0 +1,22 @@
+name: Discord Cron
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # run every 10 minutes
+  workflow_dispatch:          # allow manual run from GitHub UI
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - run: npm install axios
+      - run: node send.js
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
