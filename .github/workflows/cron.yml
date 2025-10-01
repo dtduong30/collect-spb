@@ -8,7 +8,7 @@ on:
 
 jobs:
   collect-income:
-    if: github.event.schedule == '*/10 * * * *'
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '*/10 * * * *'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -25,7 +25,7 @@ jobs:
           CONTENT: "$collect"
 
   v24:
-    if: github.event.schedule == '0 */4 * * *'
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 */4 * * *'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

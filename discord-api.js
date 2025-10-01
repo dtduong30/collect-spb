@@ -18,6 +18,7 @@ export async function sendMessage(channelId, content) {
     );
 
     console.log(`✅ Sent "${content}" to channel ${channelId} at`, new Date().toISOString());
+    console.log(res?.data);
     return res.data;
   } catch (err) {
     console.error("❌ Error sending:", err.response?.data || err.message);
