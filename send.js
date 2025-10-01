@@ -1,28 +1,11 @@
-// send.js
-import axios from "axios";
+import { sendMessage } from "./discordClient.js";
 
-const TOKEN = process.env.DISCORD_TOKEN;  // read from GitHub Secrets
-const CHANNEL_ID = process.env.CHANNEL_ID;
+const channelId = process.env.CHANNEL_ID;
+const content = process.env.CONTENT || "$collect";
 
-async function sendCollect() {
-  try {
-    const url = `https://discord.com/api/v9/channels/${CHANNEL_ID}/messages`;
-
-    const res = await axios.post(
-      url,
-      { content: "$collect" },
-      {
-        headers: {
-          "Authorization": `${TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    console.log("✅ Sent $collect at", new Date().toISOString());
-  } catch (err) {
-    console.error("❌ Error sending:", err.response?.data || err.message);
-  }
+if (!channelId) {
+  console.error("❌ CHANNEL_ID env not set");
+  process.exit(1);
 }
 
-await sendCollect();
+await sendMessage(channelId, content);
