@@ -1,4 +1,4 @@
-import { sendMessage } from "./discordClient.js";
+import { sendMessage } from "./discord-api.js";
 
 const channelId = process.env.CHANNEL_ID;
 const content = process.env.CONTENT || "$collect";
