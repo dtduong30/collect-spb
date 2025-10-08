@@ -2,13 +2,11 @@ name: Discord Cron
 
 on:
   schedule:
-    - cron: "*/10 * * * *"    # run every 10 minutes
-    - cron: "0 */4 * * *"     # every 4 hours, on the hour
+    - cron: "0 */2 * * *"     # every 2 hours, on the hour
   workflow_dispatch:          # allow manual run from GitHub UI
 
 jobs:
   collect-income:
-    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '*/10 * * * *'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,20 +21,3 @@ jobs:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
           CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
           CONTENT: "$collect"
-
-  v24:
-    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 */4 * * *'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "20"
-
-      - run: npm install axios
-      - run: node send.js
-        env:
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-          CHANNEL_ID: ${{ secrets.V24_PRO }}
-          CONTENT: "!r"
