@@ -1,0 +1,14 @@
+name = "collect-spb"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+# Cron only, no public URL. account_id comes from CLOUDFLARE_ACCOUNT_ID in .env.
+workers_dev = false
+
+[triggers]
+crons = ["0 */2 * * *"] # every 2 hours, UTC
+
+[vars]
+CONTENT = "$collect"
+
+[observability]
+enabled = true
