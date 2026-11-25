@@ -30,7 +30,7 @@ Không liên quan tới Worker `$collect` ở `src/`; chỉ dùng chung repo.
    PIN 18+ trong prototype là `1234`. Chạy được là thấy 4 tab Xem / Người / Nguồn / Hộp thư, tab Hộp thư có số khoảng 445.
 4. Đọc spec rồi **duyệt spec và 13 tiêu chí nghiệm thu**. Sau đó lập kế hoạch triển khai (`superpowers:writing-plans`).
 
-## Dump lại dữ liệu (khi không chép được `raw/`)
+## Dump lại dữ liệu (khi cần cập nhật `raw/`)
 
 Mọi script đều chỉ đọc, chạy trong DevTools Console (Cmd+Option+J trên Chrome, Cmd+Option+I trên Discord desktop). Nếu bị chặn dán thì gõ `allow pasting` trước.
 
@@ -52,5 +52,5 @@ find ~/Downloads -maxdepth 1 \( -name 'protectedtext-*.txt' -o -name 'sealnotes-
 
 ## Lưu ý
 
-- **Repo này đang PUBLIC.** Đừng commit dữ liệu thật, tên hoặc link lấy từ `raw/`, hay secret. Test dùng dòng bịa.
+- **Repo này đang PUBLIC** và `raw/` đã được commit (theo quyết định của chủ repo, 2026-11-25). Đừng commit thêm secret mới như token hay `.env`. Test dùng dòng bịa.
 - Chính sách của Vercel không cấm rõ nội dung người lớn hợp pháp, nhưng có các từ mơ hồ như "obscene" và "objectionable purpose". Xem mục Constraints trong spec.

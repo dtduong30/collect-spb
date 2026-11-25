@@ -2,5 +2,5 @@
 .dev.vars
 .wrangler/
 
-# art-pulse private dumps (never commit)
-context-art-pulse/raw/
+# art-pulse: generated from raw dumps by extract.py
+context-art-pulse/raw/data.js

@@ -9,4 +9,4 @@
 - [trap] shadow-archive/Safe-text holds notepad links + password-like lines: import as secret, never post to Discord, delete from Discord after import.
 - [cmd] DevTools scripts: distool/{dump-tabs,dump-discord,setup-cinematic}.js (setup DRY_RUN default true). Prototype ref: docs/superpowers/specs/art-pulse-prototype/ (extract.py builds raw/data.js).
 - [trap] Discord user API: /guilds/:id/threads/active is bot-only (403); find RestAPI by probing /users/@me, intl Proxy module fakes get/post/del.
-- [trap] collect-spb GitHub repo is PUBLIC: never commit raw dumps, real names/links, or secrets; raw/ is in .gitignore.
+- [ruling] collect-spb GitHub repo is PUBLIC; author chose to commit context-art-pulse/raw/ anyway (2026-11-25). Still never commit tokens/.env.
