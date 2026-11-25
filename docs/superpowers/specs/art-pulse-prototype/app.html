@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Art Pulse – prototype v2</title>
+<style>
+:root{--bg:#14181c;--s1:#1b2127;--s2:#232b33;--line:#2a323c;--tx:#dde5ec;--mu:#8a9bab;--dim:#5a6878;
+  --green:#00e054;--orange:#ff8000;--blue:#40bcf4;--red:#ff5a5f;--r:6px;--ease:cubic-bezier(.23,1,.32,1)}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}button{cursor:pointer}
+a{color:var(--blue);text-decoration:none;word-break:break-all}
+.mu{color:var(--mu)}.dim{color:var(--dim)}
+.fade{animation:fade 150ms var(--ease)}@keyframes fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.fade{animation:none}}
+
+header{position:sticky;top:0;z-index:20;background:rgba(20,24,28,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.hrow{max-width:1180px;margin:0 auto;display:flex;gap:12px;align-items:center;padding:14px 20px}
+.brand{font-size:18px;font-weight:700;white-space:nowrap}.brand b{color:var(--green)}
+#q{flex:1;min-width:0;background:var(--s2);border:1px solid transparent;border-radius:10px;padding:12px 14px;outline:none;font-size:16px}
+#q:focus{border-color:var(--mu)}
+.mode{border:1px solid var(--line);background:transparent;border-radius:999px;padding:8px 14px;font-size:14px;white-space:nowrap;color:var(--mu)}
+.mode.nsfw{border-color:var(--red);color:var(--red)}
+.sync{width:11px;height:11px;border-radius:50%;background:var(--green);border:0;padding:0;flex:none}
+.sync.off{background:var(--orange)}
+nav.tabs{max-width:1180px;margin:0 auto;display:flex;gap:8px;padding:0 16px}
+nav.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:12px 12px;color:var(--mu);font-weight:600;font-size:16px}
+nav.tabs button[data-on]{color:var(--tx);border-color:var(--green)}
+nav.tabs .n{font-weight:400;color:var(--dim);font-size:13px;margin-left:4px}
+nav.tabs .n.hot{color:var(--orange)}
+
+.wrap{max-width:1180px;margin:0 auto;display:flex;gap:32px;padding:24px 20px 140px}
+main{flex:1;min-width:0}
+aside#detail{flex:0 0 440px;position:sticky;top:130px;align-self:flex-start;max-height:calc(100vh - 130px);overflow:auto}
+aside#detail:empty{display:none}
+
+h3.sec{display:flex;justify-content:space-between;align-items:baseline;margin:36px 0 10px;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);font-weight:600}
+h3.sec:first-child{margin-top:4px}
+h3.sec button{background:none;border:0;color:var(--mu);font-size:14px;padding:6px 0;letter-spacing:0;text-transform:none}
+.row{display:flex;gap:14px;align-items:center;min-height:60px;padding:10px 14px;margin:0 -14px;border-radius:8px;cursor:pointer;content-visibility:auto;contain-intrinsic-size:auto 64px}
+.row:hover{background:var(--s1)}.row.sel{background:var(--s2)}
+.row .ic{width:30px;font-size:18px;text-align:center;color:var(--mu);flex:none}
+.row .t{flex:1;min-width:0}
+.row .t div:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .meta{margin-top:2px;font-size:14px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .r{font-size:14px;color:var(--dim);white-space:nowrap}
+.st{font-size:13px;color:var(--green)}
+.blur{filter:blur(5px)}
+.empty{color:var(--dim);padding:12px 0}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.chip{height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--mu);font-size:14px;white-space:nowrap}
+.chip:hover{color:var(--tx);border-color:var(--mu)}
+.chip[data-on]{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.glabel{font-size:12px;color:var(--dim);width:84px;flex:none;text-transform:uppercase;letter-spacing:.06em}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.pcard{background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:18px;cursor:pointer;text-align:left}
+.pcard:hover{border-color:var(--mu)}
+.av{width:52px;height:52px;font-size:18px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#0d1014;margin-bottom:8px}
+.pcard .nm{font-weight:600;font-size:17px}.pcard .sub{margin-top:4px;font-size:14px;color:var(--mu)}
+
+.back{background:none;border:0;color:var(--mu);padding:8px 0;margin-bottom:12px;font-size:15px}
+.ph{display:flex;gap:12px;align-items:center;margin-bottom:6px}
+.ph h2{margin:0;font-size:28px}
+
+/* detail */
+.det{background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:24px}
+.det h2{margin:8px 0 12px;font-size:24px;line-height:1.3;word-break:break-word}
+.det dl{display:grid;grid-template-columns:96px 1fr;gap:14px 12px;margin:20px 0}
+.det dt{color:var(--dim);font-size:14px;padding-top:6px}.det dd{margin:0}
+.det pre{white-space:pre-wrap;word-break:break-all;background:var(--bg);border-radius:8px;padding:10px;font-size:13px;color:var(--mu);margin:6px 0}
+.btn{border:1px solid var(--line);background:var(--s2);border-radius:8px;padding:10px 16px;min-height:42px;font-size:15px;white-space:nowrap}
+.btn.pri{background:var(--green);color:#08170c;border-color:var(--green);font-weight:600}
+.btn.warn{color:var(--red)}
+.x{float:right;background:none;border:0;color:var(--mu);font-size:26px;line-height:1;width:44px;height:44px;margin:-12px -12px 0 0}
+
+/* inbox */
+.ibox{background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:14px}
+.ibox .hd{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.tri{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:28px;max-width:680px}
+.tri h2{margin:10px 0;font-size:26px;word-break:break-word}
+.tri .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.tri kbd,.hint kbd{font:11px ui-monospace,Menlo,monospace;background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:0 4px;color:var(--mu)}
+.tri input{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 14px;width:260px;font-size:15px;outline:none}
+.bar{height:6px;background:var(--s2);border-radius:3px;overflow:hidden;margin:10px 0 20px}.bar i{display:block;height:100%;background:var(--green)}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:grid;place-items:center;z-index:50;padding:16px}
+.modal>div{background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:20px;width:min(340px,100%);text-align:center}
+.pin{font-size:26px;letter-spacing:.5em;text-align:center;width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;outline:none;margin:12px 0}
+
+.addb{background:var(--green);color:#08170c;border:0;border-radius:10px;width:46px;height:46px;font-size:26px;line-height:1;flex:none;font-weight:600}
+.fab{display:none}
+.amodal>div{width:min(620px,100%);text-align:left}
+.amodal textarea,.note{width:100%;min-height:110px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font:inherit;color:inherit;resize:vertical;outline:none}
+.amodal textarea:focus,.note:focus{border-color:var(--mu)}
+.prev{border-top:1px solid var(--line);padding:12px 0;display:flex;gap:12px;align-items:flex-start}
+.prev .dest{font-size:13px;margin-top:4px}
+.opts{display:flex;gap:18px;flex-wrap:wrap;margin:12px 0;font-size:15px;color:var(--mu)}
+.opts input{width:18px;height:18px;vertical-align:-3px;margin-right:6px}
+#state{position:fixed;bottom:8px;left:8px;z-index:60;font:11px/1.4 ui-monospace,Menlo,monospace;background:rgba(0,0,0,.8);color:#9fb;border-radius:6px;padding:4px 8px;max-width:min(440px,92vw);cursor:pointer;white-space:pre-wrap}
+#state:not(.open) .body{display:none}
+
+@media (max-width:860px){
+  aside#detail{position:fixed;inset:0;max-height:none;background:var(--bg);z-index:40;padding:12px;flex:none}
+  nav.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(20,24,28,.96);border-top:1px solid var(--line);justify-content:space-around;padding:0 0 env(safe-area-inset-bottom);z-index:30}
+  nav.tabs button{border-bottom:0;border-top:2px solid transparent;padding:14px 6px;font-size:15px;min-height:56px;flex:1}
+  nav.tabs button[data-on]{border-color:var(--green)}
+  #state{bottom:76px}
+  header{backdrop-filter:none;background:var(--bg)}
+  .hrow .addb{display:none}
+  .fab{display:block;position:fixed;right:18px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:35;width:58px;height:58px;border-radius:50%;font-size:30px;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+  .hrow{padding:12px 16px}.wrap{padding:16px 16px 120px}
+  .row{min-height:64px}.grid{grid-template-columns:1fr 1fr;gap:10px}
+  .ibox .hd>span{display:flex;flex-wrap:wrap;gap:8px;width:100%}
+  .brand{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <span class="brand">art<b>·</b>pulse</span>
+    <input type="search" id="q" placeholder="Tìm mọi thứ… ( / )" autocomplete="off">
+    <button class="addb" data-act="add" title="Thêm (n)">+</button>
+    <button class="mode" id="mode"></button>
+    <button class="sync" id="sync" title="Bấm để giả lập mất mạng"></button>
+  </div>
+  <nav class="tabs" id="tabs"></nav>
+</header>
+<div class="wrap"><main id="main"></main><aside id="detail"></aside></div>
+<div id="modal"></div>
+<button class="addb fab" data-act="add" aria-label="Thêm">+</button>
+<div id="state"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.0/dist/umd/index.min.js"></script>
+<script src="../../../../context-art-pulse/raw/data.js"></script>
+<script src="parse.js"></script>
+<script>
+const { fold, key } = AP;
+const M = AP.build(RAW);
+const ITEMS = M.items, byId = new Map(ITEMS.map((i) => [i.id, i]));
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const IC = { video: '▶', film: '🎬', code: '#', query: '🔎', note: '✎', folder: '📁', site: '🌐' };
+const KN = { video: 'Video', film: 'Phim', code: 'Mã', query: 'Tìm sau', note: 'Ghi chú', folder: 'Thư mục', site: 'Site' };
+const PIN = '1234', LOCK_MS = 5 * 60 * 1000;
+
+const S = { tab: 'watch', view: { t: 'home' }, q: '', mode: 'sfw', sel: null, status: new Set(), kind: new Set(), tags: new Set(),
+  reveal: new Set(), online: true, pending: 0, triage: null, done: 0, lastAct: Date.now() };
+
+/* ---------- visibility ---------- */
+const inMode = (it) => S.mode === 'nsfw' || !it.nsfw;
+const inLib = (it) => !it.archived && !it.inbox && !it.secret && inMode(it);
+const inInbox = (it) => !it.archived && it.inbox && inMode(it);
+const lib = () => ITEMS.filter(inLib);
+const sortNew = (a, b) => (b.ts || '').localeCompare(a.ts || '') || b.id - a.id;
+
+/* ---------- search (MiniSearch: prefix + fuzzy + field boosts, folded) ---------- */
+let MS = null;
+function indexAll() {
+  if (!window.MiniSearch) return;
+  MS = new MiniSearch({ fields: ['title', 'code', 'people', 'tags', 'url', 'collection', 'notes'], storeFields: [],
+    processTerm: (t) => fold(t), tokenize: (s) => s.split(/[\s\-_/.,:|()\[\]]+/).filter(Boolean),
+    searchOptions: { boost: { code: 3, people: 3, title: 2, tags: 1.5, url: 0.5 }, prefix: true, fuzzy: (t) => (t.length > 4 ? 0.2 : 0), combineWith: 'AND' } });
+  MS.addAll(ITEMS.map((i) => ({ id: i.id, title: i.title, code: i.code, people: i.peopleKeys.map((k) => M.people.get(k).name).join(' '), tags: i.tagKeys.map((k) => M.tags.get(k).name).join(' '), url: i.url, collection: i.collection, notes: i.notes.join(' ') })));
+}
+function search(q) {
+  const boost = (it) => (it.status === 'Sẽ xem' || it.status === 'Đang xem' ? 1.3 : 1) * (it.inbox ? 0.6 : 1);
+  if (MS) return MS.search(q).map((r) => ({ it: byId.get(r.id), s: r.score * boost(byId.get(r.id)) })).filter((x) => x.it && !x.it.archived && inMode(x.it) && (!x.it.secret || S.reveal.has('vault'))).sort((a, b) => b.s - a.s).map((x) => x.it);
+  const ws = fold(q).split(/\s+/); return ITEMS.filter((it) => !it.archived && inMode(it) && ws.every((w) => fold(it.title + ' ' + it.url + ' ' + it.code).includes(w)));
+}
+
+/* ---------- pieces ---------- */
+const peopleOf = (it) => it.peopleKeys.map((k) => M.people.get(k).name);
+const siteName = (it) => (it.siteKey ? M.sites.get(it.siteKey).name : '');
+function row(it) {
+  const hidden = it.secret && !S.reveal.has(it.id);
+  const meta = [peopleOf(it).join(', '), it.code && it.kind !== 'code' ? it.code : '', siteName(it), it.inbox ? '⏳ Hộp thư' : ''].filter(Boolean).join(' · ');
+  return `<div class="row ${S.sel === it.id ? 'sel' : ''}" data-item="${it.id}"><span class="ic">${IC[it.kind]}</span>
+    <div class="t"><div class="${hidden ? 'blur' : ''}">${esc(it.title)}</div>${meta ? `<div class="meta">${esc(meta)}</div>` : ''}</div>
+    <span class="r">${it.status ? `<span class="st">${it.status}</span>` : ''}${it.progress ? ' ' + esc(it.progress.slice(0, 14)) : ''}${it.nsfw && S.mode === 'nsfw' ? ' <span style="color:var(--red)">18+</span>' : ''}</span></div>`;
+}
+const section = (title, arr, more, limit = 5) => `<h3 class="sec"><span>${title} · ${arr.length}</span>${more && arr.length > limit ? `<button data-go='${JSON.stringify(more)}'>xem hết ›</button>` : ''}</h3>${arr.slice(0, limit).map(row).join('') || '<div class="empty">Trống</div>'}`;
+const hue = (s) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7);
+const avatar = (name) => `<div class="av" style="background:hsl(${hue(name)} 55% 62%)">${esc(name.split(' ').map((w) => w[0]).join('').slice(0, 2))}</div>`;
+
+/* ---------- views ---------- */
+function vWatchHome() {
+  const L = lib().filter((i) => i.type === 'watch');
+  return section('Đang xem dở', L.filter((i) => i.status === 'Đang xem'), { t: 'all', status: 'Đang xem' })
+    + section('Sẽ xem', L.filter((i) => i.status === 'Sẽ xem').sort(sortNew), { t: 'all', status: 'Sẽ xem' })
+    + section('Mới thêm', [...L].sort(sortNew), { t: 'all' })
+    + `<h3 class="sec"><span>Tất cả · ${L.length}</span><button data-go='{"t":"all"}'>mở ›</button></h3>`;
+}
+function vAll() {
+  let L = lib().filter((i) => i.type === 'watch');
+  const tagCount = new Map(); L.forEach((i) => i.tagKeys.forEach((k) => tagCount.set(k, (tagCount.get(k) || 0) + 1)));
+  if (S.status.size) L = L.filter((i) => S.status.has(i.status));
+  if (S.kind.size) L = L.filter((i) => S.kind.has(i.kind));
+  if (S.tags.size) L = L.filter((i) => [...S.tags].every((k) => i.tagKeys.includes(k)));
+  const groups = new Map(); for (const [k, n] of tagCount) { if (n < 2 && !S.tags.has(k)) continue; const t = M.tags.get(k); (groups.get(t.group) || groups.set(t.group, []).get(t.group)).push([k, n]); }
+  const open = S.view.open || '';
+  const tagRows = ['gu', 'body', 'vùng', 'thể loại', 'khác'].filter((g) => groups.get(g)?.length).map((g) => { const arr = groups.get(g).sort((a, b) => b[1] - a[1]); const lim = open === g ? 99 : 5;
+    return `<div class="chips"><span class="glabel">${g}</span>${arr.slice(0, lim).map(([k, n]) => `<button class="chip" data-tag="${k}" ${S.tags.has(k) ? 'data-on' : ''}>${esc(M.tags.get(k).name)} <span class="dim">${n}</span></button>`).join('')}${arr.length > 5 && open !== g ? `<button class="chip" data-open="${g}">+${arr.length - 5}</button>` : ''}</div>`; }).join('');
+  const chip = (set, v, label) => `<button class="chip" data-set="${set}" data-v="${v}" ${S[set].has(v) ? 'data-on' : ''}>${label}</button>`;
+  return `<button class="back" data-go='{"t":"home"}'>← Xem</button>
+    <div class="chips"><span class="glabel">trạng thái</span>${['Sẽ xem', 'Đang xem', 'Đã xem'].map((s) => chip('status', s, s)).join('')}</div>
+    <div class="chips"><span class="glabel">loại</span>${['video', 'film', 'code'].map((k) => chip('kind', k, IC[k] + ' ' + KN[k])).join('')}</div>
+    ${tagRows}${S.status.size + S.kind.size + S.tags.size ? '<div class="chips"><button class="chip" data-act="clear">✕ Xoá lọc</button></div>' : ''}
+    <h3 class="sec"><span>${L.length} mục</span><button data-act="sort">${S.view.az ? 'A–Z' : 'Mới nhất'}</button></h3>
+    ${(S.view.az ? [...L].sort((a, b) => a.title.localeCompare(b.title, 'vi')) : [...L].sort(sortNew)).slice(0, 300).map(row).join('')}${L.length > 300 ? '<div class="empty">… gõ tìm để thu hẹp</div>' : ''}`;
+}
+function vPeople() {
+  const ps = [...M.people.values()].map((p) => ({ ...p, vis: p.items.map((id) => byId.get(id)).filter((i) => i && !i.archived && inMode(i)) })).filter((p) => p.vis.length).sort((a, b) => b.vis.length - a.vis.length);
+  if (!ps.length) return `<div class="empty">${S.mode === 'sfw' ? 'Chế độ SFW: không có ai. Chuyển 18+ để xem.' : 'Chưa có ai.'}</div>`;
+  return `<h3 class="sec"><span>Diễn viên · ${ps.length}</span></h3><div class="grid">${ps.map((p) => { const tags = topTags(p.vis, 2);
+    return `<button class="pcard" data-go='${JSON.stringify({ t: 'person', k: p.key })}'>${avatar(p.name)}<div class="nm">${esc(p.name)}</div><div class="sub">${p.vis.length} mục${tags ? ' · ' + esc(tags) : ''}</div></button>`; }).join('')}</div>`;
+}
+const topTags = (items, n) => { const c = new Map(); items.forEach((i) => i.tagKeys.forEach((k) => c.set(k, (c.get(k) || 0) + 1))); return [...c].sort((a, b) => b[1] - a[1]).slice(0, n).map(([k]) => M.tags.get(k).name).join(', '); };
+function vPerson() {
+  const p = M.people.get(S.view.k); const its = p.items.map((id) => byId.get(id)).filter((i) => i && !i.archived && inMode(i)).sort(sortNew);
+  return `<button class="back" data-go='{"t":"home"}'>← Người</button><div class="ph">${avatar(p.name)}<div><h2>${esc(p.name)}</h2><div class="mu">${its.length} mục · ${esc(topTags(its, 4))}</div></div></div>`
+    + ['watch', 'source'].map((ty) => { const a = its.filter((i) => i.type === ty); return a.length ? `<h3 class="sec"><span>${ty === 'watch' ? 'Để xem' : 'Thư mục / site'} · ${a.length}</span></h3>${a.map(row).join('')}` : ''; }).join('');
+}
+function vSources() {
+  const its = ITEMS.filter((i) => i.type === 'source' || (i.siteKey && i.type === 'watch'));
+  const agg = new Map();
+  for (const i of its) { if (i.archived || !inMode(i) || i.secret || !i.siteKey) continue; const s = M.sites.get(i.siteKey); const a = agg.get(s.key) || { s, n: 0, inbox: 0 }; a.n++; if (i.inbox) a.inbox++; agg.set(s.key, a); }
+  const list = (folder) => [...agg.values()].filter((a) => a.s.folder === folder).sort((a, b) => b.n - a.n);
+  const r = (a) => `<div class="row" data-go='${JSON.stringify({ t: 'site', k: a.s.key })}'><span class="ic">${a.s.folder ? '📁' : '🌐'}</span><div class="t"><div>${esc(a.s.name)}</div><div class="meta">${esc([...a.s.domains].slice(0, 3).join(', '))}</div></div><span class="r">${a.n} link${a.inbox ? ` · <span style="color:var(--orange)">${a.inbox} chờ</span>` : ''}</span></div>`;
+  const vault = ITEMS.filter((i) => i.secret && !i.archived);
+  const sites = list(false), folders = list(true);
+  return `<h3 class="sec"><span>Thư mục · ${folders.length}</span></h3>${folders.map(r).join('')}
+    <h3 class="sec"><span>Site · ${sites.length}</span>${sites.length > 12 && !S.view.allSites ? `<button data-act="allsites">tất cả ›</button>` : ''}</h3>${sites.slice(0, S.view.allSites ? 999 : 12).map(r).join('')}
+    ${S.mode === 'nsfw' ? `<h3 class="sec"><span>🔒 Két · ${vault.length}</span><button data-go='{"t":"vault"}'>mở ›</button></h3><div class="dim" style="font-size:14px">Link notepad, mật khẩu, mã… Không bao giờ đăng Discord.</div>` : ''}`;
+}
+function vSite() {
+  const s = M.sites.get(S.view.k); const its = ITEMS.filter((i) => i.siteKey === s.key && !i.archived && inMode(i) && !i.secret).sort(sortNew);
+  return `<button class="back" data-go='{"t":"home"}'>← Nguồn</button><div class="ph"><span style="font-size:28px">${s.folder ? '📁' : '🌐'}</span><div><h2>${esc(s.name)}</h2><div class="mu">${esc([...s.domains].join(', '))} · ${its.length} link</div></div></div>${its.slice(0, 300).map(row).join('')}`;
+}
+function vVault() {
+  const its = ITEMS.filter((i) => i.secret && !i.archived);
+  return `<button class="back" data-go='{"t":"home"}'>← Nguồn</button><h3 class="sec"><span>🔒 Két · ${its.length}</span></h3>${its.map(row).join('')}`;
+}
+
+/* ---------- inbox ---------- */
+const REASON_HELP = { 'Cần bạn quyết': 'Nội dung nhạy cảm, bạn tự quyết giữ hay bỏ.', 'Có phải tên người?': 'Mô tả có cụm giống tên diễn viên. Xác nhận để tạo người.',
+  'Tiêu đề cần tìm': 'Tiêu đề bạn định tìm sau, từ "Context tìm sau".', 'Không rõ là gì': 'Dòng chữ không có link, mã hay tên rõ ràng.', 'Link chưa có mô tả': 'Chỉ có link, không tên, không tag.' };
+function vInbox() {
+  if (S.triage) return vTriage();
+  const items = ITEMS.filter(inInbox), total = items.length + S.done;
+  const by = new Map(); items.forEach((i) => (by.get(i.inbox) || by.set(i.inbox, []).get(i.inbox)).push(i));
+  const sug = M.suggestions.filter((s) => !s.done);
+  return `<div class="mu">${items.length} mục chờ · đã xử lý ${S.done}</div><div class="bar"><i style="width:${total ? (100 * S.done) / total : 0}%"></i></div>
+    ${sug.length ? `<h3 class="sec"><span>Gộp trùng? · ${sug.length}</span></h3>${sug.map((s, i) => { const Mp = s.kind === 'person' ? M.people : M.tags;
+      return `<div class="ibox"><div class="hd"><span>${s.kind === 'person' ? 'Người' : 'Tag'}: <b>${esc(Mp.get(s.b).name)}</b> → <b>${esc(Mp.get(s.a).name)}</b> <span class="dim">(giống ${Math.round(s.score * 100)}%)</span></span><span><button class="btn pri" data-merge="${i}">Gộp</button> <button class="btn" data-nomerge="${i}">Không</button></span></div></div>`; }).join('')}` : ''}
+    <h3 class="sec"><span>Theo lý do</span></h3>
+    ${[...by].sort((a, b) => b[1].length - a[1].length).map(([reason, a]) => `<div class="ibox"><div class="hd"><div><b>${esc(reason)}</b> <span class="mu">· ${a.length}</span><div class="dim" style="font-size:14px">${REASON_HELP[reason] || ''}</div></div>
+      <span><button class="btn pri" data-tri="${esc(reason)}">Phân loại từng mục</button> <button class="btn" data-bulk="${esc(reason)}" data-to="keep">Giữ hết</button> <button class="btn" data-bulk="${esc(reason)}" data-to="archive">Lưu trữ hết</button></span></div></div>`).join('') || '<div class="empty">Hộp thư trống 🎉</div>'}`;
+}
+function vTriage() {
+  const queue = ITEMS.filter((i) => inInbox(i) && i.inbox === S.triage);
+  const it = queue[0];
+  if (!it) { S.triage = null; return vInbox(); }
+  const src = it.sources[0];
+  return `<button class="back" data-act="endtri">← Hộp thư</button><div class="mu">${esc(S.triage)} · còn ${queue.length} · <span class="hint"><kbd>G</kbd> giữ <kbd>S</kbd> sẽ xem <kbd>A</kbd> lưu trữ <kbd>→</kbd> bỏ qua</span></div><div class="bar"><i style="width:${(100 * S.done) / (S.done + queue.length)}%"></i></div>
+    <div class="tri fade"><div class="dim" style="font-size:14px">${IC[it.kind]} ${KN[it.kind]}${it.siteKey ? ' · ' + esc(siteName(it)) : ''}${it.nsfw ? ' · 18+' : ''}</div>
+      <h2>${esc(it.title)}</h2>${it.url ? `<a href="${esc(it.url)}" target="_blank" rel="noreferrer noopener">${esc(it.url)}</a>` : ''}
+      ${it.flag ? `<p style="color:var(--red)">⚠ ${esc(it.flag)}</p>` : ''}
+      <pre style="white-space:pre-wrap;word-break:break-all;background:var(--bg);border-radius:6px;padding:8px;font-size:12px;color:var(--mu)">${esc(src.src)} › ${esc(src.grp)}\n${esc(src.raw)}</pre>
+      ${it.tagKeys.length ? `<div class="chips">${it.tagKeys.map((k) => `<span class="chip">${esc(M.tags.get(k).name)}</span>`).join('')}</div>` : ''}
+      ${it.maybe ? `<div class="chips"><button class="btn pri" data-person="${it.id}">👤 "${esc(it.maybe)}" là người</button></div>` : ''}
+      <div class="chips"><input id="tagin" placeholder="Thêm tag, Enter…"></div>
+      <div class="acts"><button class="btn pri" data-t="keep">Giữ <kbd>G</kbd></button><button class="btn" data-t="later">Giữ + Sẽ xem <kbd>S</kbd></button><button class="btn" data-t="archive">Lưu trữ <kbd>A</kbd></button><button class="btn" data-t="skip">Bỏ qua <kbd>→</kbd></button></div>
+    </div>`;
+}
+function triageAct(t) {
+  const it = ITEMS.find((i) => inInbox(i) && i.inbox === S.triage); if (!it) return;
+  if (t === 'skip') { ITEMS.splice(ITEMS.indexOf(it), 1); ITEMS.push(it); return render(); }
+  if (t === 'archive') it.archived = true; else { it.inbox = ''; if (t === 'later') it.status = 'Sẽ xem'; }
+  S.done++; change();
+}
+function addTag(it, name) { const k = key(name); if (!k) return; if (!M.tags.has(k)) M.tags.set(k, { key: k, name, n: 0, group: AP.tagGroup(name) }); M.tags.get(k).n++; if (!it.tagKeys.includes(k)) it.tagKeys.push(k); }
+
+/* ---------- detail ---------- */
+function detail() {
+  const it = byId.get(S.sel); if (!it) return '';
+  const hidden = it.secret && !S.reveal.has(it.id);
+  const dc = it.secret ? 'Không đăng (bí mật)' : it.nsfw ? (it.peopleKeys.length ? 'pỏn-corn → post ' + peopleOf(it)[0] : it.type === 'source' ? '🔞sites-nsfw' : 'pỏn-corn') : it.type === 'source' ? '🔍sites' : it.kind === 'film' ? '🍿blockbuster / ⭐phim-việt' : '—';
+  return `<div class="det fade"><button class="x" data-act="close">×</button><div class="dim" style="font-size:14px">${IC[it.kind]} ${KN[it.kind]} · ${it.nsfw ? '18+' : 'SFW'}${it.inbox ? ' · ⏳ ' + esc(it.inbox) : ''}</div>
+    <h2 class="${hidden ? 'blur' : ''}">${esc(it.title)}</h2>
+    ${it.secret ? `<button class="btn" data-reveal="${it.id}">${hidden ? '🔒 Hiện' : 'Ẩn'}</button>` : ''}
+    <dl class="${hidden ? 'blur' : ''}">
+      ${it.url ? `<dt>Link</dt><dd><a href="${esc(it.url)}" target="_blank" rel="noreferrer noopener">${esc(it.url)}</a></dd>` : ''}
+      ${it.code && it.kind !== 'code' ? `<dt>Mã</dt><dd>${esc(it.code)}</dd>` : ''}
+      ${it.peopleKeys.length ? `<dt>Người</dt><dd class="chips">${it.peopleKeys.map((k) => `<button class="chip" data-go='${JSON.stringify({ t: 'person', k, tab: 'people' })}'>${esc(M.people.get(k).name)}</button>`).join('')}</dd>` : ''}
+      ${it.tagKeys.length ? `<dt>Tag</dt><dd class="chips">${it.tagKeys.map((k) => `<span class="chip">${esc(M.tags.get(k).name)}</span>`).join('')}</dd>` : ''}
+      ${it.type === 'watch' ? `<dt>Trạng thái</dt><dd class="chips">${['Sẽ xem', 'Đang xem', 'Đã xem'].map((s) => `<button class="chip" data-status="${s}" ${it.status === s ? 'data-on' : ''}>${s}</button>`).join('')}</dd>` : ''}
+      ${it.progress ? `<dt>Tiến độ</dt><dd>${esc(it.progress)}</dd>` : ''}
+      ${it.siteKey ? `<dt>Nguồn</dt><dd><button class="chip" data-go='${JSON.stringify({ t: 'site', k: it.siteKey, tab: 'sources' })}'>${esc(siteName(it))}</button></dd>` : ''}
+      <dt>Discord</dt><dd class="mu" style="font-size:15px;padding-top:6px">${esc(dc)}</dd>
+    </dl>
+    <div class="dim" style="font-size:14px;margin:4px 0 6px">Ghi chú</div><textarea class="note" id="note" placeholder="Ghi gì cũng được: cảnh hay ở phút 12, xem cùng ai, cảm nhận…">${esc(it.note || '')}</textarea>
+    <details style="margin-top:12px"><summary class="dim" style="font-size:14px;cursor:pointer">Nguồn gốc (${it.sources.length}) · ${esc(it.collection)}</summary>${it.sources.map((s) => `<pre>${esc(s.src)} › ${esc(s.grp)}\n${esc(s.raw)}</pre>`).join('')}</details>
+    <div style="margin-top:12px;display:flex;gap:8px">${it.archived ? '<button class="btn" data-act="unarchive">Khôi phục</button>' : '<button class="btn warn" data-act="archive">Lưu trữ</button>'}</div></div>`;
+}
+
+/* ---------- search view ---------- */
+function vSearch() {
+  const r = search(S.q);
+  const ppl = [...M.people.values()].filter((p) => fold(p.name).includes(fold(S.q)) && p.items.some((id) => byId.get(id) && inMode(byId.get(id))));
+  const w = r.filter((i) => i.type === 'watch'), s = r.filter((i) => i.type === 'source');
+  return `${ppl.length ? `<h3 class="sec"><span>Người · ${ppl.length}</span></h3><div class="chips">${ppl.slice(0, 8).map((p) => `<button class="chip" data-go='${JSON.stringify({ t: 'person', k: p.key, tab: 'people' })}'>${esc(p.name)}</button>`).join('')}</div>` : ''}
+    ${section('Xem', w, null, 30)}${section('Nguồn', s, null, 15)}${!r.length && !ppl.length ? `<div class="empty">Không thấy "${esc(S.q)}"${S.mode === 'sfw' ? ' trong chế độ SFW' : ''}.</div>` : ''}`;
+}
+
+/* ---------- render ---------- */
+function render() {
+  const inboxN = ITEMS.filter(inInbox).length;
+  document.getElementById('tabs').innerHTML = [['watch', 'Xem'], ['people', 'Người'], ['sources', 'Nguồn'], ['inbox', 'Hộp thư']].map(([t, n]) => `<button data-tab="${t}" ${S.tab === t && !S.q ? 'data-on' : ''}>${n}${t === 'inbox' && inboxN ? `<span class="n hot">${inboxN}</span>` : ''}</button>`).join('');
+  document.getElementById('mode').textContent = S.mode === 'sfw' ? 'SFW' : '18+ 🔓';
+  document.getElementById('mode').classList.toggle('nsfw', S.mode === 'nsfw');
+  const sy = document.getElementById('sync'); sy.classList.toggle('off', !S.online); sy.title = S.online ? (S.pending ? 'Đang đồng bộ…' : 'Đã đồng bộ') + ' (bấm: giả lập offline)' : `Offline · ${S.pending} thay đổi chờ`;
+  const v = S.view.t;
+  document.getElementById('main').innerHTML = S.q ? vSearch()
+    : S.tab === 'watch' ? (v === 'all' ? vAll() : vWatchHome())
+    : S.tab === 'people' ? (v === 'person' ? vPerson() : vPeople())
+    : S.tab === 'sources' ? (v === 'site' ? vSite() : v === 'vault' ? vVault() : vSources())
+    : vInbox();
+  document.getElementById('detail').innerHTML = detail();
+  document.getElementById('tagin')?.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.value.trim()) { const it = ITEMS.find((i) => inInbox(i) && i.inbox === S.triage); addTag(it, e.target.value.trim()); render(); document.getElementById('tagin')?.focus(); } });
+  const st = document.getElementById('state');
+  st.innerHTML = `state: ${S.tab}/${v}${S.q ? ` q="${esc(S.q)}"` : ''} · ${S.mode} · lib ${lib().length} · inbox ${inboxN} · ${S.online ? 'online' : 'offline'} chờ ${S.pending}<div class="body">${esc(JSON.stringify({ stats: M.stats, view: S.view, status: [...S.status], kind: [...S.kind], tags: [...S.tags], sel: S.sel, triage: S.triage, done: S.done, search: MS ? 'MiniSearch' : 'substring (CDN offline)' }, null, 1))}</div>`;
+}
+function change() { S.pending++; if (S.online) setTimeout(() => { S.pending = 0; render(); }, 800); render(); }
+function go(v) { if (v.tab) S.tab = v.tab; S.view = v; S.q = ''; document.getElementById('q').value = ''; S.status.clear(); S.kind.clear(); S.tags.clear(); if (v.status) S.status.add(v.status); if (innerWidth <= 860) S.sel = null; render(); scrollTo(0, 0); }
+
+/* ---------- quick add ---------- */
+const KEYS = new Map(ITEMS.map((i) => [AP.itemKey(i), i]));
+const draft = (line, o) => { const it = AP.parseLine({ src: 'app', grp: 'Thêm nhanh', t: line, nsfw: o.nsfw, ts: new Date().toISOString() }); if (o.later && it.kind !== 'site' && it.kind !== 'folder') it.status = 'Sẽ xem'; it.nsfw = o.nsfw ? it.nsfw : false; it.inbox = ['person', 'film', 'query'].includes(it.kind) ? '' : AP.inboxReason(it); // typed titles are intentional, not inbox noise return it; };
+function addOpts() { return { nsfw: document.getElementById('a-nsfw')?.checked ?? S.mode === 'nsfw', later: document.getElementById('a-later')?.checked ?? true }; }
+function openAdd() {
+  document.getElementById('modal').innerHTML = `<div class="modal amodal" data-act="addbg"><div class="fade">
+    <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:19px">Thêm</b><button class="x" data-act="addclose">×</button></div>
+    <div class="mu" style="font-size:14px;margin:6px 0 12px">Gõ như ghi notepad, mỗi dòng 1 mục: <code>link - tên, mô tả</code> · <code>SSIS-698</code> · tên phim · tên diễn viên</div>
+    <textarea id="addtxt" placeholder="https://sxyprn.net/post/abc - Kenzie Anne, vú to, must try&#10;Midsommar&#10;SSIS-698"></textarea>
+    <div class="opts"><label><input type="checkbox" id="a-later" checked>Đánh dấu Sẽ xem</label>${S.mode === 'nsfw' ? '<label><input type="checkbox" id="a-nsfw" checked>18+</label>' : '<span class="dim">Chế độ SFW: lưu là SFW</span>'}</div>
+    <div id="addprev"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px"><button class="btn" data-act="addclose">Huỷ</button><button class="btn pri" data-act="addsave">Lưu <kbd style="background:transparent;border-color:#0a3">⌘↵</kbd></button></div>
+  </div></div>`;
+  const ta = document.getElementById('addtxt'); ta.focus();
+  const prev = () => {
+    const o = addOpts();
+    document.getElementById('addprev').innerHTML = ta.value.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
+      const it = draft(l, o), dup = KEYS.get(AP.itemKey(it));
+      const dest = dup ? `<span style="color:var(--orange)">Đã có: “${esc(dup.title)}” → chỉ gộp thêm nguồn</span>` : it.kind === 'person' ? '<span style="color:var(--green)">→ Người mới</span>' : it.inbox ? `<span style="color:var(--orange)">→ Hộp thư · ${esc(it.inbox)}</span>` : `<span style="color:var(--green)">→ ${it.type === 'source' || ['site', 'folder'].includes(it.kind) ? 'Nguồn' : 'Xem'}${it.status ? ' · ' + it.status : ''}</span>`;
+      return `<div class="prev"><span class="ic" style="font-size:18px">${IC[it.kind] || '👤'}</span><div style="min-width:0"><div style="font-weight:600;word-break:break-word">${esc(it.title)}</div>
+        <div class="mu" style="font-size:14px">${esc([KN[it.kind] || 'Người', it.people.join(', '), it.tags.join(', '), it.code && it.kind !== 'code' ? it.code : ''].filter(Boolean).join(' · '))}</div><div class="dest">${dest}</div></div></div>`;
+    }).join('');
+  };
+  ta.addEventListener('input', prev);
+  document.getElementById('a-later').addEventListener('change', prev); document.getElementById('a-nsfw')?.addEventListener('change', prev);
+  ta.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) saveAdd(); });
+}
+function personKey(name) { const k = key(name); if (!M.people.has(k)) M.people.set(k, { key: k, name, n: 0, items: [] }); return k; }
+function saveAdd() {
+  const o = addOpts(); let added = 0, merged = 0, lastId = null;
+  for (const l of (document.getElementById('addtxt')?.value || '').split('\n').map((x) => x.trim()).filter(Boolean)) {
+    const it = draft(l, o), dup = KEYS.get(AP.itemKey(it));
+    if (it.kind === 'person') { personKey(it.people[0]); added++; continue; }
+    if (dup) { dup.sources.push(...it.sources); merged++; lastId = dup.id; continue; }
+    it.id = Math.max(...ITEMS.map((i) => i.id)) + 1; it.type = ['site', 'folder'].includes(it.kind) ? 'source' : 'watch';
+    it.peopleKeys = it.people.map(personKey); it.peopleKeys.forEach((k) => M.people.get(k).items.push(it.id));
+    it.tagKeys = []; it.tags.forEach((t) => addTag(it, t));
+    if (it.site) { if (!M.sites.has(it.site.key)) M.sites.set(it.site.key, { key: it.site.key, name: it.site.name, folder: it.site.folder, domains: new Set(), n: 0 }); M.sites.get(it.site.key).domains.add(it.site.domain); it.siteKey = it.site.key; }
+    ITEMS.unshift(it); byId.set(it.id, it); KEYS.set(AP.itemKey(it), it); lastId = it.id; added++;
+    MS?.add({ id: it.id, title: it.title, code: it.code, people: it.people.join(' '), tags: it.tags.join(' '), url: it.url, collection: it.collection, notes: '' });
+  }
+  document.getElementById('modal').innerHTML = '';
+  if (added + merged === 1 && lastId) S.sel = lastId;
+  toast(`${added ? `Đã thêm ${added}` : ''}${added && merged ? ' · ' : ''}${merged ? `gộp ${merged} mục đã có` : ''}`);
+  change();
+}
+function toast(msg) { if (!msg) return; const t = document.createElement('div'); t.textContent = msg; t.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:150px;background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:999px;z-index:70;font-size:15px'; document.body.append(t); setTimeout(() => t.remove(), 1800); }
+document.addEventListener('change', (e) => { if (e.target.id === 'note') { const it = byId.get(S.sel); it.note = e.target.value; MS?.discard(it.id); MS?.add({ id: it.id, title: it.title, code: it.code, people: peopleOf(it).join(' '), tags: it.tagKeys.map((k) => M.tags.get(k).name).join(' '), url: it.url, collection: it.collection, notes: [...it.notes, it.note].join(' ') }); change(); } });
+
+/* ---------- PIN lock ---------- */
+function askPin() {
+  document.getElementById('modal').innerHTML = `<div class="modal"><div class="fade"><div style="font-size:28px">🔒</div><b>Mở chế độ 18+</b><div class="dim" style="font-size:14px">Bản thật dùng PIN hoặc Face ID. Prototype: <b>1234</b></div>
+    <input class="pin" id="pin" inputmode="numeric" maxlength="4" autocomplete="off"><div id="pinerr" style="color:var(--red);font-size:12px;min-height:16px"></div><button class="btn" data-act="pincancel">Huỷ</button></div></div>`;
+  const p = document.getElementById('pin'); p.focus();
+  p.addEventListener('input', () => { if (p.value.length === 4) { if (p.value === PIN) { S.mode = 'nsfw'; S.lastAct = Date.now(); document.getElementById('modal').innerHTML = ''; render(); } else { p.value = ''; document.getElementById('pinerr').textContent = 'Sai PIN'; } } });
+}
+setInterval(() => { if (S.mode === 'nsfw' && Date.now() - S.lastAct > LOCK_MS) { S.mode = 'sfw'; S.sel = null; S.reveal.clear(); render(); } }, 10000);
+
+/* ---------- events ---------- */
+document.getElementById('q').addEventListener('input', (e) => { S.q = e.target.value.trim(); render(); });
+document.getElementById('mode').onclick = () => { if (S.mode === 'nsfw') { S.mode = 'sfw'; S.sel = null; S.reveal.clear(); render(); } else askPin(); };
+document.getElementById('sync').onclick = () => { S.online = !S.online; if (S.online && S.pending) setTimeout(() => { S.pending = 0; render(); }, 800); render(); };
+document.getElementById('state').onclick = (e) => e.currentTarget.classList.toggle('open');
+document.addEventListener('pointerdown', () => { S.lastAct = Date.now(); });
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('button,[data-item],[data-go],[data-act]'); if (!t) return; const d = t.dataset;
+  if (d.tab) { S.tab = d.tab; S.view = { t: 'home' }; S.q = ''; document.getElementById('q').value = ''; S.triage = null; return render(); }
+  if (d.go) return go(JSON.parse(d.go));
+  if (d.item) { S.sel = +d.item; return render(); }
+  if (d.set) { S[d.set].has(d.v) ? S[d.set].delete(d.v) : S[d.set].add(d.v); return render(); }
+  if (d.tag) { S.tags.has(d.tag) ? S.tags.delete(d.tag) : S.tags.add(d.tag); return render(); }
+  if (d.open) { S.view = { ...S.view, open: d.open }; return render(); }
+  if (d.status) { const it = byId.get(S.sel); it.status = it.status === d.status ? '' : d.status; return change(); }
+  if (d.reveal) { const id = +d.reveal; S.reveal.has(id) ? S.reveal.delete(id) : S.reveal.add(id); return render(); }
+  if (d.tri) { S.triage = d.tri; return render(); }
+  if (d.t) return triageAct(d.t);
+  if (d.person) { const it = byId.get(+d.person); const k = key(it.maybe); if (!M.people.has(k)) M.people.set(k, { key: k, name: it.maybe, n: 0, items: [] }); const p = M.people.get(k); p.n++; p.items.push(it.id); it.peopleKeys.push(k); it.tagKeys = it.tagKeys.filter((x) => x !== key(it.maybe)); it.maybe = null; it.inbox = ''; S.done++; return change(); }
+  if (d.bulk) { ITEMS.filter((i) => inInbox(i) && i.inbox === d.bulk).forEach((i) => { if (d.to === 'archive') i.archived = true; else i.inbox = ''; S.done++; }); return change(); }
+  if (d.merge != null) { const s = M.suggestions[+d.merge]; const Mp = s.kind === 'person' ? M.people : M.tags; const prop = s.kind === 'person' ? 'peopleKeys' : 'tagKeys';
+    ITEMS.forEach((i) => { if (i[prop].includes(s.b)) i[prop] = [...new Set(i[prop].map((k) => (k === s.b ? s.a : k)))]; }); if (s.kind === 'person') Mp.get(s.a).items.push(...Mp.get(s.b).items); Mp.delete(s.b); s.done = true; return change(); }
+  if (d.nomerge != null) { M.suggestions[+d.nomerge].done = true; return render(); }
+  const a = d.act;
+  if (a === 'close') { S.sel = null; return render(); }
+  if (a === 'clear') { S.status.clear(); S.kind.clear(); S.tags.clear(); return render(); }
+  if (a === 'sort') { S.view = { ...S.view, az: !S.view.az }; return render(); }
+  if (a === 'allsites') { S.view = { ...S.view, allSites: true }; return render(); }
+  if (a === 'archive') { byId.get(S.sel).archived = true; S.sel = null; return change(); }
+  if (a === 'unarchive') { byId.get(S.sel).archived = false; return change(); }
+  if (a === 'endtri') { S.triage = null; return render(); }
+  if (a === 'add') return openAdd();
+  if (a === 'addsave') return saveAdd();
+  if (a === 'addclose' || (a === 'addbg' && e.target === t)) { document.getElementById('modal').innerHTML = ''; return; }
+  if (a === 'pincancel') { document.getElementById('modal').innerHTML = ''; }
+});
+document.addEventListener('keydown', (e) => {
+  S.lastAct = Date.now();
+  if (/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) { if (e.key === 'Escape') { e.target.blur(); if (e.target.id === 'q') { e.target.value = ''; S.q = ''; render(); } } return; }
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === '/') { e.preventDefault(); document.getElementById('q').focus(); return; }
+  if (e.key === 'n') { e.preventDefault(); return openAdd(); }
+  if (e.key === 'Escape') { S.sel = null; document.getElementById('modal').innerHTML = ''; return render(); }
+  if (S.tab === 'inbox' && S.triage) { const m = { g: 'keep', s: 'later', a: 'archive', ArrowRight: 'skip' }[e.key]; if (m) { e.preventDefault(); triageAct(m); } }
+});
+
+// screenshot helper: ?mode=nsfw&tab=inbox&q=alyx&tri=…&sel=12&view=all
+{ const u = new URLSearchParams(location.search); if (u.get('mode') === 'nsfw') S.mode = 'nsfw'; if (u.get('tab')) S.tab = u.get('tab'); if (u.get('q')) { S.q = u.get('q'); document.getElementById('q').value = S.q; } if (u.get('tri')) S.triage = u.get('tri'); if (u.get('sel')) S.sel = +u.get('sel'); if (u.get('view')) S.view = { t: u.get('view') }; }
+indexAll(); render();
+{ const a = new URLSearchParams(location.search).get('add'); if (a) { openAdd(); const ta = document.getElementById('addtxt'); ta.value = a; ta.dispatchEvent(new Event('input')); } }
+</script>
+</body>
+</html>

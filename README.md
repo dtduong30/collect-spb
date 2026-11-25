@@ -39,3 +39,9 @@ npx wrangler deploy   # output phải có "schedule: 0 */2 * * *"
 ```
 
 Xem log trực tiếp: `npx wrangler tail`.
+
+## context-art-pulse/
+
+App cá nhân riêng biệt (PWA catalog cho category Discord "Cinematic Realm"), không liên quan tới Worker này. Đọc `context-art-pulse/README.md`.
+
+`distool/` có thêm các script DevTools: `dump-tabs.js` (dump notepad), `dump-discord.js` (dump Discord category), `setup-cinematic.js` (tạo forum và tag).
